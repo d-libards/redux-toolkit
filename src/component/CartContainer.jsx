@@ -1,17 +1,19 @@
-import { clearCart } from '../features/cart/cartSlice';
+import { toggleModal } from '../features/modal/modalSlice';
 import CartItem from './CartItem';
 import { useSelector, useDispatch } from 'react-redux';
 
 const CartContainer = () => {
   const dispatch = useDispatch();
-  const { totalPrice, amount, cartItems } = useSelector((state) => state.cart);
-  if (amount < 1) {
+  const { totalPrice, totalAmount, cartItems } = useSelector(
+    (state) => state.cart
+  );
+  if (totalAmount < 1) {
     return (
       <section className="cart">
         {/* cart header */}
         <header>
-          <h2>your bag</h2>
-          <h4 className="empty-cart">is currently empty</h4>
+          <h2>Cart</h2>
+          <h4 className="empty-cart">Cart is currently empty</h4>
         </header>
       </section>
     );
@@ -21,7 +23,7 @@ const CartContainer = () => {
     <section className="cart">
       {/* cart header */}
       <header>
-        <h2>your bag</h2>
+        <h2>Cart</h2>
       </header>
       {/* cart items */}
       <div>
@@ -37,7 +39,10 @@ const CartContainer = () => {
             total <span>${totalPrice}</span>
           </h4>
         </div>
-        <button className="btn clear-btn" onClick={() => dispatch(clearCart())}>
+        <button
+          className="btn clear-btn"
+          onClick={() => dispatch(toggleModal())}
+        >
           clear cart
         </button>
       </footer>

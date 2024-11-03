@@ -4,6 +4,7 @@ import { removeItem, toggleAmount } from '../features/cart/cartSlice';
 
 const CartItem = ({ id, title, price, img, amount }) => {
   const dispatch = useDispatch();
+
   return (
     <article className="cart-item">
       <img src={img} alt={title} />
