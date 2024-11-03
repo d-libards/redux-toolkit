@@ -1,20 +1,32 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import cartItems from '../../cartItems';
+import axios from 'axios';
+import { toggleModal } from '../modal/modalSlice';
 
 const url = 'https://www.course-api.com/react-useReducer-cart-project';
 
 const initialState = {
-  cartItems: cartItems,
+  cartItems: [],
   totalAmount: 0,
   totalPrice: 0,
   isLoading: true,
 };
 
-export const getCartItems = createAsyncThunk('cart/getCartItems', () => {
-  return fetch(url)
-    .then((response) => response.json())
-    .catch((error) => console.log(error));
-});
+export const getCartItems = createAsyncThunk(
+  'cart/getCartItems',
+  async (name, thunkAPI) => {
+    try {
+      // console.log(name);
+      // console.log(thunkAPI);
+      // console.log(thunkAPI.getState());
+      // thunkAPI.dispatch(toggleModal());
+      const response = await axios.get(url);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue('something went wrong');
+      console.error(error);
+    }
+  }
+);
 
 const cartSlice = createSlice({
   name: 'cart',
@@ -60,18 +72,19 @@ const cartSlice = createSlice({
       state.totalPrice = total.toFixed(2);
     },
   },
-  extraReducers: {
-    [getCartItems.pending]: (state) => {
-      state.isLoading = true;
-    },
-    [getCartItems.fulfilled]: (state, action) => {
-      console.log(action);
-      state.isLoading = false;
-      state.cartItems = action.payload;
-    },
-    [getCartItems.rejected]: (state) => {
-      state.isLoading = false;
-    },
+  extraReducers: (builder) => {
+    builder
+      .addCase(getCartItems.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getCartItems.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.cartItems = action.payload;
+      })
+      .addCase(getCartItems.rejected, (state, action) => {
+        console.log(action);
+        state.isLoading = false;
+      });
   },
 });
 export const { clearCart, removeItem, toggleAmount, calculateTotals } =
